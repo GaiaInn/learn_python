@@ -1,0 +1,27 @@
+练习3：设计一个函数返回给定文件名的后缀名。
+def get_suffix(filename,get_dot=False):
+    '''
+    param filename:文件名
+    param get_dot:后缀名是否需要带点#改过
+    return:文件的后缀名
+    '''
+    #纠正
+    pos=filename.rfind('.')#也是从0开始数的
+    print(pos)
+    if 0<pos<len(filename)-1:
+        index=pos if get_dot else pos+1#如果要带点，就从点开始取
+        return filename[index:]#return相对于if要缩进
+    else:#else要和if并齐，且后面的内容要回车
+        return ''
+
+get_suffix('a.txt')
+   
+'''
+#原来的版本
+#缩进不对会很麻烦很麻烦
+    if 0<pos<len(filename)+1:#数据大小分析错误，应该是len（）-1
+        suffix=filename[pos:]
+    else:
+        suffix=''
+    return suffix
+'''  
