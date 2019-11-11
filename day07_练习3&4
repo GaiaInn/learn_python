@@ -1,0 +1,57 @@
+练习3：设计一个函数返回给定文件名的后缀名。
+def get_suffix(filename,get_dot=False):
+    '''
+    param filename:文件名
+    param get_dot:后缀名是否需要带点#改过
+    return:文件的后缀名
+    '''
+    #纠正
+    pos=filename.rfind('.')#也是从0开始数的
+    print(pos)
+    if 0<pos<len(filename)-1:
+        index=pos if get_dot else pos+1#如果要带点，就从点开始取
+        return filename[index:]#return相对于if要缩进
+    else:#else要和if并齐，且后面的内容要回车
+        return ''
+
+get_suffix('a.txt')
+   
+'''
+#原来的错误版本
+#缩进不对会很麻烦很麻烦
+    if 0<pos<len(filename)+1:#数据大小分析错误，应该是len（）-1
+        suffix=filename[pos:]
+    else:
+        suffix=''
+    return suffix
+'''  
+
+练习4：设计一个函数返回传入的列表中最大和第二大的元素的值。
+def max2(a):
+    
+    nummax1=a[0]
+    nummax2=a[1]
+    num2=[nummax1,nummax2]#没有把2个按大小排序
+    for i in range(2,len(a)):
+        if a[i]>nummax1:
+            nummax1=a[i]
+    for i in range(2,len(a)):
+        if a[i]>nummax2 and a[i]!=nummax1:
+            nummax2=a[i]
+    return num2
+a=[7,5,3,9,2,8]
+print(len(a))#返回的是实际的长度6
+max2(a)
+#上面的这个是错误的
+def max2(a):
+    m1,m2=(a[0],a[1]) if a[0]>a[1] else (a[1],a[0])
+    for index in range(2,len(a)):
+        if a[index]>m1:
+            m2=m1
+            m1=a[index]
+            
+        elif a[index]>m2:
+            m2=a[index]
+    return m1,m2
+a=[7,5,3,9,2,8]
+max2(a)
