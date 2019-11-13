@@ -1,0 +1,89 @@
+**定义类，然后创建和使用对象**
+class Student(object):
+
+	# __init__是一个特殊方法用于在创建对象时进行初始化操作
+	# 通过这个方法我们可以为学生对象绑定name和age两个属性
+	def __init__(self, name, age):#定义了在使用类创建对象时需要输入的属性的个数，
+		self.name = name #这里不懂为什么要这么写
+		self.age = age
+
+	def study(self, course_name):#要先定义好self，才会出现self.study,然后执行其指令
+		print('%s正在学习%s.' % (self.name, course_name))
+
+	# PEP 8要求标识符的名字用全小写多个单词用下划线连接
+	# 但是很多程序员和公司更倾向于使用驼峰命名法(驼峰标识)
+	def watch_av(self):#通过定义函数的方式来定义study和watch_av两个方法
+		if self.age < 18:
+			print('%s只能观看《熊出没》.' % self.name)
+		else:
+			print('%s正在观看岛国爱情动作片.' % self.name)
+
+stu1=Student('Gaia',22)
+stu1.study('python')
+stu1.watch_av()
+
+在Python中，属性和方法的访问权限只有两种，也就是公开的和私有的，如果希望属性是私有的，在给属性命名时可以用两个下划线作为开头
+在实际开发中，我们并不建议将属性设置为私有的
+
+
+
+练习1：定义一个类描述数字时钟
+class clock(object):#里面的object加不加好像都一样
+    '''
+    这个函数是我写的
+    '''
+    def __init__(self,hour,minute,second):
+        self.hour=hour
+        self.minute=minute
+        self.second=second
+    def hours(self):
+        print('现在是%s点'%self.hour)
+time1=clock(3,46,42)
+time1.hours()#方法和属性的名字不能重复
+#有的方法不需要输入内容，但是要记得加空括号（）
+
+class Clock(object):
+    """
+    数字时钟
+    """
+
+    def __init__(self, hour=0, minute=0, second=0):#注意对函数设置默认值
+        """
+        构造器
+
+        :param hour: 时
+        :param minute: 分
+        :param second: 秒
+        """
+        self._hour = hour#单下划线并没有使属性私有的能力，但是能传递该属性应受到保护的意图
+        self._minute = minute
+        self._second = second
+
+    def run(self):#本身不是一个循环，要放到循环里才能不停地走字
+        """走字"""
+        self._second += 1
+        if self._second == 60:
+            self._second = 0
+            self._minute += 1
+            if self._minute == 60:
+                self._minute = 0
+                self._hour += 1
+                if self._hour == 24:
+                    self._hour = 0
+
+    def __str__(self):#定义了该类下对象的输出（print）格式
+        """显示时间"""
+        return '%02d:%02d:%02d' % \#注意了朋友，这应该就是python中的换行符了——“ \ ”
+               (self._hour, self._minute, self._second)
+
+
+def main():
+    clock = Clock(23, 59, 58)
+    while True:#这好像是一个死循环
+        print(clock)
+        #sleep(1)#这一行代码不知道为什么运行不了，这应该是一个延迟输出的函数
+        clock.run()
+
+
+if __name__ == '__main__':
+    main()
