@@ -1,0 +1,4 @@
+@property装饰器对对象属性的访问（getter）和修改（setter）没咋看懂
+
+    # 限定Person对象只能绑定_name, _age和_gender属性
+    __slots__ = ('_name', '_age', '_gender')
