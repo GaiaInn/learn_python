@@ -1,0 +1,132 @@
+@property装饰器对对象属性的访问（getter）和修改（setter）没咋看懂
+    @property
+    def title(self):
+        return self._title
+
+    @title.setter
+    def title(self, title):
+        self._title = title
+        #注意！ 没看懂
+        
+
+    # 限定Person对象只能绑定_name, _age和_gender属性
+    __slots__ = ('_name', '_age', '_gender')
+
+
+静态方法和类方法
+class Triangle(object):
+
+    def __init__(self, a, b, c):
+        self._a = a
+        self._b = b
+        self._c = c
+        
+        @staticmethod#以静态方法来构建非对象方法
+        def is_valid(a,b,c):
+        #def is_valid(self):
+            return a+b>c and a+c>b and b+c>a
+            #if a+b>c and a+c>b and b+c>a:
+            #该方法不是对象方法而只是类下面对三角形判断是否存在的语句
+        def perimeter(self):
+            return self._a + self._b + self._c
+
+        def area(self):
+            half = self.perimeter() / 2
+            return sqrt(half * (half - self._a) *
+                    (half - self._b) * (half - self._c))
+
+def main():
+    a, b, c = 3, 4, 5
+    # 静态方法和类方法都是通过给类发消息来调用的
+    if Triangle.is_valid(a, b, c):
+        t = Triangle(a, b, c)
+        print(t.perimeter())
+        # 也可以通过给类发消息来调用对象方法但是要传入接收消息的对象作为参数
+        # print(Triangle.perimeter(t))
+        print(t.area())
+        # print(Triangle.area(t))
+    else:
+        print('无法构成三角形.')
+
+
+if __name__ == '__main__':
+    main()
+    
+    
+    @classmethod
+    def now(cls):#观测当前的时间点
+        '''
+        在类中定义类方法，类方法的第一个参数约定名为cls，
+        它代表的是当前类相关的信息的对象（类本身也是一个对象，
+        有的地方也称之为类的元数据对象），
+        通过这个参数我们可以获取和类相关的信息并且可以创建出类的对象
+        '''
+        ctime = localtime(time())
+        return cls(ctime.tm_hour, ctime.tm_min, ctime.tm_sec)
+        #上面这里不是很懂
+        
+        
+    
+    类的继承：
+class Student(Person):#在已有类Person的基础上定义新类，新类继承了父类的所有方法和属性
+    def __init__(self,name,age,grade):
+        super().__init__(name,age)#继承的属性
+        self._grade=grade#自己的新属性
+        
+    @property
+    def grade(self):#和前面的函数要有相同的缩进，否则会一直出错……
+        return self._grade
+        
+    @grade.setter
+    def grade(self,grade):
+        self._grade=grade
+            
+    def study(self,course):
+        print('%s的%s正在学习%s.' % (self._grade, self._name, course))#course前面没带对象
+
+            #我写的版本:
+            #print('%s的%s正在学习%s'%(self.grade,self.name,self.course))
+
+def main():
+    stu=Student('Gaia',22,'研二')
+    stu.watch_av()#这个和下面一个有相同的效果
+    Student.watch_av(stu)
+    stu.study('python')
+    
+if __name__ == '__main__':
+    main()
+    
+多态————子类对象表现出的不同行为    
+from abc import ABCMeta, abstractmethod
+
+class Pet(object, metaclass=ABCMeta):
+    #通过abc模块的ABCMeta元类和abstractmethod包装器来达到抽象类的效果，这个抽象类不能创建对象
+    """宠物"""
+    def __init__(self, nickname):
+        self._nickname = nickname
+
+    @abstractmethod
+    def make_voice(self):#        """发出声音"""
+        #在函数中，若不换行，在'''  '''之前如果有空格，运行会发生错误
+        pass
+
+class Dog(Pet):#    """狗"""
+    def make_voice(self):
+        print('%s: 汪汪汪...' % self._nickname)
+
+
+class Cat(Pet):#    """猫"""
+    def make_voice(self):
+        print('%s: 喵...喵...' % self._nickname)
+#Dog和Cat两个子类分别对Pet类中的make_voice抽象方法进行了重写并给出了不同的实现版本
+
+def main():
+    pets = [Dog('旺财'), Cat('凯蒂'), Dog('大黄')]
+    for pet in pets:
+        pet.make_voice()#这里的对象名pet是由上一行中循环中的命名决定的
+
+if __name__ == '__main__':
+    main()
+
+    
+    
