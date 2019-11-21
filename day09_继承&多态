@@ -107,7 +107,7 @@ class Pet(object, metaclass=ABCMeta):
 
     @abstractmethod
     def make_voice(self):#        """发出声音"""
-        #在函数中，若不换行，在'''  '''之前如果有空格，运行会发生错误
+        #在函数中，若不换行，语句后面的'''  '''之前如果有空格，运行会发生错误
         pass
 
 class Dog(Pet):#    """狗"""
@@ -124,6 +124,8 @@ def main():
     pets = [Dog('旺财'), Cat('凯蒂'), Dog('大黄')]
     for pet in pets:
         pet.make_voice()#这里的对象名pet是由上一行中循环中的命名决定的
+        #本来类pet的对象make_voice只有一种响应，但由于使用了ABCMeta元类和abstractmethod包装器，达到了抽象效果
+        #使pet有了更细的区分Cat('可以随意起名字，这个名字属于类pet')，Dog（''）,两个细类对相同对象有不同的响应
 
 if __name__ == '__main__':
     main()
