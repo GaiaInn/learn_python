@@ -1,0 +1,162 @@
+from abc import ABCMeta, abstractmethod
+
+from random import randint, randrange
+
+
+class Fighter(object, metaclass=ABCMeta):
+    #__slots__(_name,_hp) 错误示范
+    __slots__=('_name', '_hp')  # 属性限定要放在表明属性称呼前面
+
+    def __init__(self, name, hp):
+        self._name = name  # 这是名字
+        self._hp = hp  # 这是生命值
+
+    @property
+    def name(self):
+        # Fighter.name=name#我写的
+        return self._name
+
+    @property
+    def hp(self):
+        return self._hp
+
+    @hp.setter
+    def hp(self,hp):
+        self._hp=hp if hp>=0 else 0
+
+    @property#这个函数为什么会出现alive
+    def alive(self):
+        return self._hp>0
+
+    @abstractmethod
+    def attack(self,other):
+        pass#抽象函数
+
+class Ultraman(Fighter):#这里相邻两级间的缩进比正常多了一倍，不知道是否影响运行
+        __slots__ = ('_name','_hp','_mp')
+        def __init__(self,name,hp,mp):
+            super().__init__(name,hp)#括号前没有“=”
+            #self._name=name--我写的
+            self._mp=mp
+            #这里为什么没有对属性mp的封装
+
+        def attack(self,other):
+            '''
+            a=randrange(1,10)
+            other._hp-=a
+            other._hp=other._hp if other._hp>=0 else 0
+            '''
+            other._hp-=randint(15,25)#原版是other.hp,好像没啥区别
+
+        def huge_attack(self,other):
+            '''
+            打掉对方至少50点或四分之三的血，扣减50的魔法值，
+            :param other: 被攻击者
+            :return: 攻击成功返回True，否则False
+            '''
+            #if Ultraman._mp>0
+            if self._mp>50:
+                self._mp-=50
+                injury=50 if 50>=other._hp*3//4 else other._hp*3//4#用整除，简化计算
+                other._hp-=injury
+                return True
+            else:
+                self.attack(other)#这个打不了，打另一个
+                return False
+            #other._hp-=50 if 50>other._hp*3/4 else
+
+        def magic_attack(self,others):
+            '''
+            攻击一群——others，扣减20的魔法值
+            :param others:
+            :return: 攻击成功返回True，否则False
+            '''
+            if self._mp>=20:
+                self._mp-=20
+                for temp in others:#others是不知道对象的集合，用循环来便利
+                    temp._hp-=randint(10,15)#原程序里有判断是否存活，为什么上面那个不判断，这个判断
+                return True
+            else:
+                return False
+        def resume(self):
+            incr_point=randint(1,10)
+            self._mp+=incr_point
+            return incr_point#返回这个值是要干嘛
+
+        def __str__(self):
+            return '~~~%s奥特曼~~~'%self._name+\
+                '生命值：%d\n'%self._hp+\
+                '魔法值：%d\n'%self._mp
+
+class Monster(Fighter):
+    __slots__ = ('_name','_hp')
+    #def __init__(self,name,hp):
+    def attack(self,other):
+        other._hp-=randint(10,20)
+    def __str__(self):
+        return '~~~%s小怪兽~~~\n'%self._name+\
+            '生命值：%d\n'%self._hp
+
+def is_any_alive(monsters):
+    for temp in monsters:
+        if temp.alive>0:#不加：会运行错误吗
+            return True
+        #temp._hp>0
+    return  False
+def choose_alive_monster(monsters):#一种思路是把死的都踢出去，再选；一种是选一个，要是是活的就选他
+    length=len(monsters)
+    while True:#容易被忽略的一步，这个逻辑判断应该是来自上一步
+      a=randrange(length)
+      monster=monsters[a]
+      if monster.alive>0:
+          return monster
+def display_info(ultraman,monsters):#注意括号内，要填展示信息的对象
+    print(ultraman)
+    for monster in monsters:
+        print(monster)
+
+def main():
+    u=Ultraman('超群',500,100)
+    m1=Monster('超越',400)
+    m2=Monster('君君',300)
+    m3=Monster('华强',200)
+    m=[m1,m2,m3]
+    roundn=0
+    while is_any_alive(m) and u.alive:#alive 到底是不是逻辑函数！！！
+        roundn+=1
+        print('~~~第%02d回合~~~'%roundn)
+        select_m=choose_alive_monster(m)
+        num=randrange(10)
+        if num<=6:
+            u.attack(select_m)
+            u.resume()
+            print('%s奥特曼普通攻击了%s小怪兽'%(u._name,select_m._name))
+            if select_m.alive:
+                select_m.attack(u)
+                print('%s小怪兽回击了%s奥特曼'%(select_m._name,u._name))
+        elif num<=9:
+            if u.magic_attack(m):#这是个逻辑判断函数
+                u.resume()
+                print('%s奥特曼魔法攻击了小怪兽' % (u._name))
+            else: print('%s奥特曼使用魔法攻击失败'%u._name)
+            for temp in m:
+                if temp.alive>0:
+                    temp.attack(u)
+                    print('%s小怪兽回击了%s奥特曼'%(temp._name,u._name))
+        else:
+            if u.huge_attack(select_m):
+                u.resume()
+                print('%s奥特曼大招攻击了%s小怪兽' % (u._name, select_m._name))
+            else:print('%s奥特曼使用大招攻击失败'%u._name)
+            if select_m.alive:
+                select_m.attack(u)
+                print('%s小怪兽回击了%s奥特曼'%(select_m._name,u._name))
+        display_info(u,m)
+    print('\n========战斗结束!========\n')
+    if u.alive > 0:
+        print('%s奥特曼胜利!' % u.name)
+    else:
+        print('小怪兽胜利!')
+
+if __name__ == '__main__':
+    main()
