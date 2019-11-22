@@ -1,0 +1,121 @@
+#python中，文件的读取
+f = open('致橡树.txt', 'r', encoding='utf-8')
+---
+‘r’是文件模式，默认为‘r’
+操作模式 	具体含义
+'r' 	读取 （默认）
+'w' 	写入（会先截断之前的内容）#写入或者追加不知道要怎么做
+'x' 	写入，如果文件已经存在会产生异常
+'a' 	追加，将内容写入到已有文件的末尾
+'b' 	二进制模式
+'t' 	文本模式（默认）
+'+' 	更新（既可以读又可以写）
+---
+通过encoding参数指定编码（如果不指定，默认值是None，那么在读取文件时使用的是操作系统默认的编码），
+如果不能保证保存文件时使用的编码方式与encoding参数指定的编码方式是一致的，那么就可能因无法解码字符而导致读取失败。
+我的windows系统默认的编码是GBK，windows-936
+
+#文件的打开
+import time
+def main():
+    f = None#初始化，不知道为什么是none
+    file_path = 'C:/Users/asus/Desktop/unname.txt'#文件路径中分割符要向右斜
+    #如果路径pycharm的指定路径（我的是C:/Users/asus/Documents/Python Scripts）就不用标明路径名
+    try:
+        f = open(file_path, 'r')#这里没有指定编码，如果指定为utf-8，会出错，因为原文件是系统默认的gbk，windows-936
+        print(f.read())
+        print(type(f))#输出为<class '_io.TextIOWrapper'>，这是个什么类型……
+    except FileNotFoundError:#捕获可能出现的异常状况
+        print('无法打开指定的文件!')
+    except LookupError:
+        print('指定了未知的编码!')
+    except UnicodeDecodeError:
+        print('读取文件时解码错误!')
+    finally:#不论程序正常还是异常都会执行到，称“总是执行代码块”，适合用来释放外部资源
+        if f:
+            f.close()
+
+        with open(file_path) as f:
+            #通过with关键字指定文件对象的上下文环境并在离开上下文环境时自动释放文件资源，不需要在finally中关闭文件资源
+            for line in f:
+                print(line,end='')
+                time.sleep(0.5)
+            print()#输出空行
+        with open(file_path) as f:#没有改行，列表为空——可能因为没有with会释放f吧
+            lines=f.readlines()#该对象返回一个列表，对f中内容按行读取，readline（）只读取第一行
+            print(lines)
+
+if __name__ == '__main__':
+    main()
+
+#文件的写入
+#import math
+from math import sqrt#为什么有的模块可以直接调用，可有的模块只能调用其中的函数
+def is_prime(a):
+    for index in range(2,int(sqrt(a))+1):
+        if a%index==0:
+            return False
+    return True if a!=1 else False  # matlab中的非是~，注意区分
+
+def main():
+    filenames = ('a.txt', 'b.txt', 'c.txt')
+    fs_list = []
+    try:
+        for filename in filenames:
+            fs_list.append(open(filename, 'w', encoding='utf-8'))  # 追加式写入用‘a'
+            # 在列表中添加3个元素，即3个txt文件
+            # 如果要写入的文件不存在会自动创建文件而不是引发异常，文件在当前路径下创建
+        for number in range(1, 10000):
+            if is_prime(number):
+                if number < 100:
+                    fs_list[0].write(str(number) + '\n')  #用对象write写入
+                elif number < 1000:
+                    fs_list[1].write(str(number) + '\n')
+                else:
+                    fs_list[2].write(str(number) + '\n')
+    except IOError as ex:  # 这是什么玩意儿  # 以ex来代指IOError的错误标识文字，方便后续调用
+        print(ex)
+        print('写文件时发生错误!')
+    finally:
+        for fs in fs_list:
+            fs.close()
+    print('操作完成!')
+
+if __name__ == '__main__':
+    main()
+
+#非文本文件和二进制文件的保存
+列表和字典数据以JSON格式进行保存。JSON是“JavaScript Object Notation”的缩写，它本来是JavaScript语言中创建对象的一种字面量语法，
+现在已经被广泛的应用于跨平台跨语言的数据交换，原因很简单，因为JSON也是纯文本，任何系统任何编程语言处理纯文本都是没有问题的。
+import json
+#写入json与前面不同的地方：1.调入模块；2.用模块json中的dump将python数据序列化并存入文件
+def main():  # 注意mydict的输入特点
+    mydict = {
+        'name': '骆昊',
+        'age': 38,
+        'qq': 957658,
+        'friends': ['王大锤', '白元芳'],
+        'cars': [
+            {'brand': 'BYD', 'max_speed': 180},
+            {'brand': 'Audi', 'max_speed': 280},
+            {'brand': 'Benz', 'max_speed': 320}
+        ]
+    }
+    try:
+        with open('data.json', 'w', encoding='utf-8') as fs:
+            json.dump(mydict, fs)#将Python对象mydict按照JSON格式序列化到文件fs中
+    except IOError as e:
+        print(e)
+    print('保存数据完成!')
+
+
+if __name__ == '__main__':
+    main()
+    
+
+    dump - 将Python对象按照JSON格式序列化到文件中
+    dumps - 将Python对象处理成JSON格式的字符串
+    load - 将文件中的JSON数据反序列化成对象
+    loads - 将字符串的内容反序列化成Python对象
+    #就是从json写入和取出的函数名
+
