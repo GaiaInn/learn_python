@@ -5,3 +5,82 @@
 
 正则表达式里的分枝条件，具体方法是用|把不同的规则分隔开。
 匹配分枝条件时，将会从左到右地测试每个条件，如果满足了某个分枝的话，就不会去再管其它的条件了。 
+
+可以用小括号来指定子表达式(也叫做分组)(重复多个字符)
+从左向右，以分组的左括号为标志，第一个出现的分组的组号为1，第二个为2，以此类推。
+\1代表分组1匹配的文本
+
+import re
+def main():
+    username = input('请输入用户名: ')
+    qq = input('请输入QQ号: ')
+    # match函数的第一个参数是正则表达式字符串或正则表达式对象
+    # 第二个参数是要跟正则表达式做匹配的字符串对象
+    m1 = re.match(r'^[0-9a-zA-Z_]{6,20}$', username)#输入6-20个字符，^和$分别标示开头和结尾
+    if not m1:
+        print('请输入有效的用户名.')
+    m2 = re.match(r'^[1-9]\d{4,11}$', qq)  # r代表使用原始字符串
+    #输入5-11个数字，要求第一个数字不能是0
+    if not m2:
+        print('请输入有效的QQ号.')
+    if m1 and m2:
+        print('你输入的信息是有效的!')
+
+if __name__ == '__main__':
+    main()
+    
+    import re
+def main():
+    # 创建正则表达式对象 使用了前瞻和回顾来保证手机号前后不应该出现数字
+    pattern = re.compile(r'(?<=\D)1[34578]\d{9}(?=\D)')
+    # (?<=\D)匹配非数字后面的内容，即要求号码前面不能有数字，(?=\D)匹配非数字前面的内容
+    sentence = '''
+    重要的事情说8130123456789遍，我的手机号是13512346789这个靓号，
+    不是15600998765，也是110或119，王大锤的手机号才是15600998765。
+    '''
+    # 查找所有匹配并保存到一个列表中
+    mylist = re.findall(pattern, sentence)  # findall返回列表
+    print(mylist)
+    print('--------华丽的分隔线--------')
+    # 通过迭代器取出匹配对象并获得匹配的内容
+    for temp in pattern.finditer(sentence):
+        # finditer返回一个迭代器——迭代器是个什么玩意
+        print(temp.group())
+    '''
+    for factor in re.finditer(pattern,sentence):
+        print(factor.group())
+    这个和上面一样的返回结果
+    '''
+    print('--------华丽的分隔线--------')
+    # 通过search函数指定搜索位置找出所有匹配
+    m = pattern.search(sentence)
+    while m:
+        print(m.group())
+        m = pattern.search(sentence, m.end())# 这个m.end()是什么意思
+
+if __name__ == '__main__':
+    main()
+    
+    
+import re
+def main():
+    sentence = '你丫是傻叉吗? 我操你大爷的. Fuck you.'
+    purified = re.sub('[操肏艹]|fuck|shit|傻[比屄逼叉缺吊屌]|煞笔',
+                      '*', sentence, flags=re.IGNORECASE)
+    # 注意sub函数的使用，查找待替换内容，替换内容，替换对象，options
+    # flags=re.IGNORECASE指执行不区分大小写的匹配
+    #如果需要为flags参数指定多个值，可以使用按位或运算符进行叠加，如flags=re.I | re.M
+    print(purified)  # 你丫是*吗? 我*你大爷的. * you.
+if __name__ == '__main__':
+    main()
+    
+import re
+def main():
+    poem = '窗前明月光，疑是地上霜。举头望明月，低头思故乡。'
+    sentence_list = re.split(r'[，。, ]', poem)
+    print(sentence_list)
+    while '' in sentence_list:
+        sentence_list.remove('')#因为列表末尾会出现一个''，但是，为什么会出现这个东西？
+    print(sentence_list) 
+if __name__ == '__main__':
+    main()
