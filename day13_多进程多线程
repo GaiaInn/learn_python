@@ -1,0 +1,75 @@
+单进程执行多个命令：
+from time import time, sleep
+from random import randint
+
+def download_task_time(filename):
+    '''函数（）里面要有东西'''
+    download_time=randint(5,15)
+    sleep(download_time)#要让程序确实停顿，否则主函数里没法有效计时
+    print('下载文件%s需要%d秒'%(filename,download_time))
+
+def main():
+    start=time()
+    file1='setup.exe'
+    file2='倾尽天下.mp3'
+    download_task_time(file1)
+    download_task_time(file2)
+    end=time()
+    print('一共用了%.2f秒' % (end-start))#f是浮点型，d不是浮点型
+
+if __name__=='__main__':#要加单引号
+    main()
+    
+多进程：
+from time import time, sleep
+from random import randint
+from multiprocessing import Process
+from os import getpid  #os模块牵涉到一些操作系统功能，如删除文件，显示路径等
+
+def download_task_time(filename):
+    '''函数（）里面要有东西'''
+    print('启动下载进程，进程号[%d]'%getpid())
+    download_time=randint(5,15)
+    sleep(download_time)#要让程序确实停顿，否则主函数里没法有效计时
+    print('下载文件%s需要%d秒'%(filename,download_time))
+
+def main():
+    start=time()
+    p1=Process(target=download_task_time,args=('倾尽天下.mp3',))
+    p1.start()
+    #download_task_time('倾尽天下.mp3')
+    p2=Process(target=download_task_time,args=('readme.txt',))
+    p2.start()
+    p1.join()
+    p2.join()
+    end=time()
+    '''
+    Process是一个类，这里我们创建了两个对象p2和p1，
+    通过target参数我们传入一个函数来表示进程启动后要执行的代码，
+    后面的args是一个元组，它代表了传递给函数的参数
+    注意看args的输入格式——*arg=(xx , )*，注意！就是因为这里，一直运行不了！！
+    start方法用来启动进程，而join方法表示等待进程执行结束。
+    '''
+    print('一共耗费%.2f秒'%(end-start))
+
+if __name__ == '__main__':
+    main()
+
+#print函数的一点用法
+f = open("123.txt", "w")#没有该文件就新建一个
+print("love", file = f,flush=True)
+'''print 函数将内容写入内存，若指定文件就写入文件，
+flush=True就是把写入内容及时刷新，否则在执行f.close()后才将内容写进文件中
+注意“file=”后面跟的不是文件名
+还有就是，写入中文会乱码，不知道为什么
+'''
+
+多个进程之间不能轻易通信，比如：
+启动两个进程，一个输出Ping，一个输出Pong，两个进程输出的Ping和Pong加起来一共10个。
+即使声明全局变量counter来计数也不行，每个子进程有自己独立的内存空间，这也就意味着两个子进程中各有一个counter变量
+因此需要用到multiprocessing模块中的Quene类，它是可以被多个进程共享的队列，底层是通过管道和信号量（semaphore）机制来实现的
+
+使用多线程和多进程的区别
+from threading import Thread
+把“Process”换成“Thread”
+——再就没区别了
