@@ -1,0 +1,37 @@
+import numpy as np
+#首先导入 numpy 库
+a1 = np.array([1,2,3,4,4,5,6])#一维数组，长度为7
+a2 = np.array([[1,2,3],[4,5,6]])#二维数组，长度为2，[1,2,3]是第一行，
+#a2[0.1]=2————注意别弄错
+#a2[:,2]a2的第3列
+#数组array和列表list类似，但是数据array可以定义维度，且适合做数学代数运算
+print(a1.dtype)#查看数组类型，a1数组在我电脑上显示的是int32
+a4=a1.astype(np.float64)#将数组a1的类型转化为float64
+print('维度解锁：',a2.ravel())  #  ravel()函数可以将高维数组转化为一维数组
+print('按列求和：',a2.sum(axis=0))#
+print('全局求和',a2.sum())#
+print('按列求积：',a2.prod(axis=0))#
+print('全局最大值：',a2.max(),'全局最小值：',a2.min())#
+print('按列求最大值：',a2.max(axis=0),'按行求最小值：',a2.min(axis=1))#
+print('按列求均值：',a2.mean(axis=0))
+print('按列求标准差：',a2.std(axis=0))
+print('按行累加：\n',x.cumsum(axis=1))
+
+print(np.exp(a2))#对矩阵所有元素求指数
+#print(a2.exp())——这样写不行
+print(np.sqrt(a2))#对矩阵所有元素开二次方
+np.floor(a2)#向上取整
+np.ceil(a2)#向下取整
+np.round(a2,2)#四舍五入，保留小数点后2位
+x = np.random.randint(1,20,(4,3))#随机生成4行3列的矩阵，数字范围为1-20
+a=np.array(range(10))
+print(a[::2])
+#从索引0（也就是第一个数）开始截取——[0 2 4 6 8]
+print(a[1::2])
+#从索引1开始截取——[1 3 5 7 9]
+print(a[::3])
+#每3个取一个——[0 3 6 9]
+s=np.arange(1,10,1)
+#输出一个一维数列，(起始数,终止数,间隔),包括1，不包括10
+
+
