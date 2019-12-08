@@ -37,7 +37,8 @@ def main():
     start=time()
     p1=Process(target=download_task_time,args=('倾尽天下.mp3',))
     p1.start()
-    #download_task_time('倾尽天下.mp3')
+    #上面两行也可以写成
+    #Process(target=download_task_time,args=('倾尽天下.mp3',).start()
     p2=Process(target=download_task_time,args=('readme.txt',))
     p2.start()
     p1.join()
@@ -73,3 +74,117 @@ flush=True就是把写入内容及时刷新，否则在执行f.close()后才将�
 from threading import Thread
 把“Process”换成“Thread”
 ——再就没区别了
+
+#%%
+from threading import Thread
+from time import sleep
+class Account():
+##替换的开始
+    def __init__(self):
+        #我有一个问题是，init里面并没有balance，为什么下面就有了
+        self._balance=0
+
+    def deposit(self,money):
+        new_balance=self._balance+money
+        # 由于多个线程共同执行这一步
+        # ‘多个线程得到的账户余额都是初始状态下的0，所以都是0上面做了+1的操作，因此得到了错误的结果。’
+        sleep(0.01)
+        self._balance=new_balance
+        # 上面三行模拟受理存款业务需要0.01秒的时间
+        '''
+        self._balance+=money
+        这是我写的版本，不存在多线程下转账数目不足的问题
+                '''
+##替换的结束
+****
+    def __init__(self):
+        self._balance=0
+        self._lock=Lock()
+    def deposit(self,money):
+        self._lock.acquire()
+        try:
+            new_balance = self._balance + money
+            sleep(0.01)
+            self._balance = new_balance
+        finally:
+            self._lock.release()
+#说明，我们可以通过“锁”来保护“临界资源”，
+#只有获得“锁”的线程才能访问“临界资源”，而其他没有得到“锁”的线程只能被阻塞起来，
+#直到获得“锁”的线程释放了“锁”，其他线程才有机会获得“锁”，
+#还要记得在初始项中加载threading模块下的Lock函数
+****
+                
+    @property
+    def balance(self):
+        return self._balance
+        #return Account._balance#错误的版本
+        
+class AddMoneyThread(Thread):
+    def __init__(self,account,money):
+        super().__init__()
+        #super.__init__()##错误的版本
+        self._account=account
+        self._money=money
+
+    def run(self):
+        #方法run应该是调用类时可以自动运行的一个
+        self._account.deposit(self._money)
+
+def main():
+    acount=Account()
+    threads=[]
+    for _ in range(100):
+        t=AddMoneyThread(acount,1)
+        #由类AddMoneyThread创建的对象，返回值（不知道是嘛，大概）标记了该对象的某些特征
+        threads.append(t)#threads的作用可能就是为了计数
+        t.start()
+    for t in threads:
+        t.join()#所有线程都开始后才等待执行结束
+    print(threads)
+    print('账户余额为：￥%d元'%acount.balance)
+if __name__ == '__main__':
+    main()
+
+##对计算密集型任务的解决，计算1-10000的加和，将这个任务分解到8个进程中去执行
+from multiprocessing import Process, Queue
+from random import randint
+from time import time
+
+
+def task_handler(curr_list, result_queue):
+    total = 0
+    for number in curr_list:
+        total += number
+    result_queue.put(total)
+
+def main():
+    number_list=[x for x in range(1,10001)]
+    index=0
+    result_queue=Queue()#这步是干嘛的
+    processes=[]
+    for _ in range(8):
+        p=Process(target=task_handler,
+                  args=(number_list[index:index+1250], result_queue))
+        index+=12500
+        processes.append(p)
+        #不能写成processes=[processes,p]，会使p丧失其属性
+        p.start()
+    # 开始记录所有进程执行完成花费的时间
+    start = time()
+    for p in processes:
+        p.join()
+    # 合并执行结果
+    total = 0
+    while not result_queue.empty():
+        total += result_queue.get()
+    #上面这一步看不懂
+    print(total)
+    end = time()
+    print('Execution time: ', (end - start), 's', sep='')
+
+
+if __name__ == '__main__':
+    main()
+    
+    
+    
