@@ -23,7 +23,9 @@ print(np.sqrt(a2))#对矩阵所有元素开二次方
 np.floor(a2)#向上取整
 np.ceil(a2)#向下取整
 np.round(a2,2)#四舍五入，保留小数点后2位
-x = np.random.randint(1,20,(4,3))#随机生成4行3列的矩阵，数字范围为1-20
+x = np.random.randint(1,20,(4,3))#均匀分布，随机生成4行3列的矩阵，数字范围为1-20
+np.random.randn(2,2)#二维或一维，正态随机数
+np.random.rand(3,3)#0-1均匀分布随机数
 a=np.array(range(10))
 print(a[::2])
 #从索引0（也就是第一个数）开始截取——[0 2 4 6 8]
