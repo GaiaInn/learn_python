@@ -1,0 +1,78 @@
+import numpy as np
+import pandas as pd
+s_array = np.random.randn(5)
+#生成一维数组
+s = pd.Series(s_array, index = ['a','b','c','d','e'])
+#序列Series也是一个一维数组结构，在Series中index和值一一对应，
+#若无index项，按0，1，2，……的顺序分配
+s_dict= {'a':11,'b':1000,'c':123213,'d':-1000}
+s=pd.Series(s_dict)
+#通过字典来生成Series
+print(s['a'])
+print(s[['a','c','e']])
+#通过Index来访问值，返回值为对应的值
+s['a'] = 1000000000#修改原序列
+s.index#查看序列s的index
+s.values# 查看序列s的值
+s.diff()  # 对序列s的值做一阶差分
+#%%
+data = {'state': ['Ohio', 'Ohio', 'Ohio', 'Nevada', 'Nevada'],
+        'year': [2000, 2001, 2002, 2001, 2002],
+        'pop': [1.5, 1.7, 3.6, 2.4, 2.9]}
+frame = pd.DataFrame(data)
+#DataFrame是一个二维数组，包括行索引index，值和列名，若不指明列名，同样默认分配
+#若data中只有值，也可以写成
+#frame = pd.DataFrame(data,index=['state','year','pop']).T
+#要注意转置，否则index会被认为是列名
+frame
+#%%
+data = [['Ohio', 'Ohio', 'Ohio', 'Nevada', 'Nevada'],
+        [2000, 2001, 2002, 2001, 2002],
+        [1.5, 1.7, 3.6, 2.4, 2.9]]
+frame = pd.DataFrame(data,index=['state','year','pop']).T
+#frame = pd.DataFrame(data,columns=['state','year','pop'])
+#上面这一段代码会发生错误，把columns改成index才能顺利运行，下面那个却可以，不知道为什么
+#！！！？？？
+frame
+frame.index#行索引名
+frame.columns#列名
+frame.values#值
+frame.describe()#数据框的描述性统计
+frame.loc[1,:]#索引为1的行，data.ix[1]是另一种查看索引为1的行的方法，但似乎不建议使用
+frame[['year','pop']]#提取这两列
+frame[:3,['year','pop']]#从头开始指导索引为3的行&year和pop两列
+#%%
+data = pd.DataFrame(np.random.randint(1,100,(10,4)),columns=['x1','x3','x4','x2'])
+#data
+data['新列'] = ['HAHA'] * len(data)# 在原有的数据框中新加入一列
+data[ (data['x3']>20)&(data['x4']<50) ]#截取数据框x3大于20且x4小于50的记录
+data.dropna()#删除有缺失的行
+data.dropna(how='all')#行中每一元素 都有确实才删除
+#上一行代码=data.dropna(how='all'，axis=0)，默认对行操作，axis=1对列操作
+data.fillna(value=0)#用0填充缺失值
+data.fillna(method='ffill')#用前一个非NaN值来填充，'bfil'用后一个非NaN值来填充
+#data.sort(columns='x2',ascending=True)#按x2列升序排
+#运行结果说上面的没有sort这个函数
+data.sort_index()#运行了好像没什么用
+pd.concat([data1,data2],axis=0)#按行拼接两个数据框
+***以下都还没看过
+pd.merge一般针对的是按列合并。
+pd.merge(left, right, how='inner', on=None, left_on=None, right_on=None, left_index=False, right_index=False, sort=True, suffixes=('_x', '_y'), copy=True, indicator=False)
+
+left: 一个dataframe对象
+right: 另一个dataframe对象
+how: 可以是'left', 'right', 'outer', 'inner'. 默认为inner。
+on: 列名，两个dataframe都有的列。如果不传参数，而且left_index和right_index也等于False，则默认把两者交叉/共有的列作为链接键（join keys）。可以是一个列名，也可以是包含多个列名的list。
+left_on: 左边dataframe的列会用做keys。可以是列名，或者与dataframe长度相同的矩阵array。
+right_on: 右边同上。
+left_index: 如果为Ture，用左侧dataframe的index作为连接键。如果是多维索引，level数要跟右边相同才行。
+right_index: 右边同上。
+sort: 对合并后的数据框排序，以连接键。
+suffixes: 一个tuple，包字符串后缀，用来加在重叠的列名后面。默认是('_x','_y')。
+copy: 默认Ture，复制数据。
+indicator: 布尔型（True/FALSE），或是字符串。如果为True，合并之后会增加一列叫做'_merge'。是分类数据，用left_only, right_only, both来标记来自左边，右边和两边的数据。
+*****以上
+
+
+
+
