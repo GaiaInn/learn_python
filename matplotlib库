@@ -1,0 +1,68 @@
+import matplotlib.pyplot as plt
+#from numpy import ployfit,ploy1d
+#为什么我输入就会出错，就显示没有该函数
+from numpy import polyfit,poly1d
+import numpy as np
+
+plt.style.use('ggplot')
+x=np.linspace(-10,10,100)
+y=x*2+np.random.randn(100)*2
+plt.plot(x,y,'b*',label='真实散点')
+plt.show()
+coef_fit=polyfit(x,y,1)
+#返回的数组是拟合函数的系数
+coef_fit
+f=poly1d(coef_fit)#直接返回函数
+plt.plot(x,y,'b*',label='真实散点')
+plt.plot(x,coef_fit[0] * x + coef_fit[1],'k-',label='拟合直线')
+#plt.plot(x,f,'k-',label='拟合直线')
+#这样写画不出来
+#只要两个画图命令放一起，他们就会被画在一张图上
+plt.legend(loc='best')#有了这一条才能加图例
+plt.show()
+#%%
+from matplotlib.pyplot import *
+#默认是按照subplot(111)画图
+x_y=plot([0, 1], [0, 1])      # plot a line from (0, 0) to (1, 1)
+show()
+title("a strait line")
+legend('啊哈')#不知道为什么会出现好几个图例，而且中文显示不出来
+xlabel("x value")
+ylabel("y value")
+#%%
+import matplotlib.pyplot as plt
+import numpy as np
+x1=np.linspace(0,5)
+x2=np.linspace(0,2)
+y1 = np.cos(2 * np.pi * x1) * np.exp(-x1)
+y2 = np.cos(2 * np.pi * x2)
+plt.subplot(2,2,1)#该函数起定位作用
+plt.plot(x1,y1,'m-o')
+plt.title('A tale of 2 subplots')
+#在2*2的四张图里，这个title只在该图上方出现
+plt.ylabel('Damped oscillation')
+
+plt.subplot(2,2,2)
+plt.plot(x2,y2,'c*')
+plt.xlabel('time (s)')
+plt.ylabel('Undamped')
+
+plt.subplot(2,2,3)
+plt.plot(x2,y2,'c.-')
+plt.xlabel('time (s)')
+plt.ylabel('Undamped')
+#%%
+#这个运行不了，而且往后的也不懂
+import matplotlib.pyplot as plt
+from WindPy import *
+from datetime import *
+import pandas as pd
+import numpy as np
+w.start()
+
+data=w.wsd('600739.SH','open,high,low,close,volume','2016-11-01','2016-12-30')
+data1=pd.DataFrame(data.Data,index=['open','high','low','close','volume'],columns=data.Times).T
+
+plt.subplots(figsize=(20,3))
+ax = data1['volume'].plot(kind='Bar', color=['r' if x[4] > x[1] else 'g' for x in data1.itertuples()])
+ax.set_xticklabels([x.strftime('%Y-%m-%d') for x in data.Times])
