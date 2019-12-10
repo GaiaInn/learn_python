@@ -55,6 +55,8 @@ data.fillna(method='ffill')#用前一个非NaN值来填充，'bfil'用后一个�
 #运行结果说上面的没有sort这个函数
 data.sort_index()#运行了好像没什么用
 pd.concat([data1,data2],axis=0)#按行拼接两个数据框
+data.duplicated()#查看数据框中是否存在重复记录，标记为True的为重复记录
+data.drop_duplicates()#剔出重复记录
 ***以下都还没看过
 pd.merge一般针对的是按列合并。
 pd.merge(left, right, how='inner', on=None, left_on=None, right_on=None, left_index=False, right_index=False, sort=True, suffixes=('_x', '_y'), copy=True, indicator=False)
