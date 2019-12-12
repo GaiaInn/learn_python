@@ -15,6 +15,7 @@ s['a'] = 1000000000#修改原序列
 s.index#查看序列s的index
 s.values# 查看序列s的值
 s.diff()  # 对序列s的值做一阶差分
+
 #%%
 data = {'state': ['Ohio', 'Ohio', 'Ohio', 'Nevada', 'Nevada'],
         'year': [2000, 2001, 2002, 2001, 2002],
@@ -25,6 +26,7 @@ frame = pd.DataFrame(data)
 #frame = pd.DataFrame(data,index=['state','year','pop']).T
 #要注意转置，否则index会被认为是列名
 frame
+
 #%%
 data = [['Ohio', 'Ohio', 'Ohio', 'Nevada', 'Nevada'],
         [2000, 2001, 2002, 2001, 2002],
@@ -41,6 +43,10 @@ frame.describe()#数据框的描述性统计
 frame.loc[1,:]#索引为1的行，data.ix[1]是另一种查看索引为1的行的方法，但似乎不建议使用
 frame[['year','pop']]#提取这两列
 frame[:3,['year','pop']]#从头开始指导索引为3的行&year和pop两列
+#上面这句为什么运行不了？
+frame.to_excel('C:/Users/asus/Documents/Python Scripts/frame.xlsx')
+#输出为excel，输出为csv的函数为：frame.to_csv
+
 #%%
 data = pd.DataFrame(np.random.randint(1,100,(10,4)),columns=['x1','x3','x4','x2'])
 #data
@@ -75,6 +81,51 @@ copy: 默认Ture，复制数据。
 indicator: 布尔型（True/FALSE），或是字符串。如果为True，合并之后会增加一列叫做'_merge'。是分类数据，用left_only, right_only, both来标记来自左边，右边和两边的数据。
 *****以上
 
+#%%
+#基于pandas的文件操作
+import pandas as pd
+text=pd.read_table('C:/Users/asus/Documents/Python Scripts/ex1_2_26读取数据.txt',index_col=0,delimiter=' ')
+#文件路径必须输入
+#index_col=0表示指定第一列为index
+#delimiter指定数据间的分隔符，分隔符可以是空格，制表符，冒号等
+#这个的读取实现不了，不知道为什么，就是出现不了dataframe的形式
+#？？？
+#%%
+data_excel=pd.read_excel('C:/Users/asus/Documents/Python Scripts/ex1_2_26读取数据.xlsx')
+data_excel.head()#这一行加不加好像没啥区别
 
+#%%
+#对csv格式数据的读取和excel近似，但是要加encoding
+data_csv=pd.read_csv('C:/Users/asus/Documents/Python Scripts/ex1_2_26读取数据.csv',encoding='GBK')
+#encoding='GBK'一般要加上，这个涉及编译解码的问题
+data_csv.head()
+#输出函数为data.to_excel/data.to_csv，示例前面有
+
+#%%
+import pandas as pd
+import numpy as np
+'''数据分组'''
+data = {'地域': ['上海', '上海', '非上海', '非上海', '上海','非上海','上海','上海','上海'],
+        '性别': ['男', '女', '男', '女', '男','女','女','男','男'],
+        'x1': [1.5, 1.7, 3.6, 2.4, 2.9,2.2,100,2.0,0],
+        'x2': np.random.randn(9)}
+data = pd.DataFrame(data)
+data
+data.groupby('地域').mean()#按地域求x1，x2（可计算项）的均值
+#除均值外，还有求和sum，求标准差std等多个函数
+functions=['count','mean','max','min']
+grouped=data.groupby(['地域','性别'])
+res=grouped['x1','x2'].agg(functions)
+#多个函数的共同操作
+grouped.agg({'x1':['sum','mean'],'x2':'max'})
+#对两列做不同操作
+
+def top(data_in,n=5,column='x2'):
+        #按第四列从大到小排序，取最小的5个数
+        return data_in.sort(column)[-n:]#运行不了
+#data.groupby('地域').apply(top,n=2)#运行不了，为什么？？
+#apply可以对分组后的数据框进行自定义的函数操作
+x=data.pivot_table(index='地域',columns='性别',values='x1',aggfunc=['sum','max'],observed=True)
+#数据透视表，地域是列名，性别是行名,以x1为观察值，计算项包括sum和max，observed不知道是干嘛的
 
 
