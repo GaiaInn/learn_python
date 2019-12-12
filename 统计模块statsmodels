@@ -1,0 +1,30 @@
+##一个简单回归
+import statsmodels.api as sm
+import pandas as pd
+import numpy as np
+'''
+简单的线性回归求参数
+'''
+data=pd.DataFrame([])
+x=np.random.randn(2192)
+data['x']=x
+data['y']=2*x+1+np.random.randn(2192)*0.2
+data.index=list(pd.date_range('2011-01-01','2016-12-31'))
+#难道index是说的列名吗
+data['year']=data.index.year
+data.head()#这一步到底是干嘛的
+by_year=data.groupby('year')#这是个什么格式
+by_year.apply(lambda g:g['y'].corr(g['x']))
+#求相关系数
+#lambda是匿名函数，g是输入的自变量，g['y'].corr(g['x']是输出的因变量
+
+def regression(data,y_name,x_name):
+    X=data['x_name']
+    Y=data['y_name']
+    X['intercept']=1.0#什么意思
+    result=sm.OLS(Y,X).fit()#什么意思
+    return result.params
+#data.apply(regression,'y','x')
+#上行代码无法运行，（apply似乎只能对dataframe中实现对Series不同属性之间的计算）
+#啊啊啊不知道，不知道！！！
+
